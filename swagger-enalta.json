@@ -194,6 +194,16 @@
             "description": "Nombre del centro. Siempre será obligatorio.",
             "example": "Cementerio Jardín Alcalá de Henares"
           },
+          "phone": {
+            "type": "string",
+            "description": "Teléfono de contacto del centro.",
+            "example": "930 222 122"
+          },
+          "openTime": {
+            "type": "string",
+            "description": "Horario de apertura del centro.",
+            "example": "9:00 - 19:00"
+          },
           "address": {
             "$ref": "#/components/schemas/Address"
           }
