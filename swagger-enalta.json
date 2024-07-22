@@ -120,6 +120,49 @@
           }
         }
       }
+    },
+    "/custom-objects": {
+      "get": {
+        "tags": [
+          "Custom Objects"
+        ],
+        "summary": "Obtiene un listado de custom objects filtrado por página e idioma",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "description": "Nombre de la página para filtrar los custom objects",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "Idioma para filtrar los custom objects (opcional)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listado de custom objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CustomObjects"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -363,6 +406,273 @@
           }
         },
         "description": "Modelo de datos de producto disponible para el canal online."
+      },
+      "Banner": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Identificador único del banner."
+          },
+          "title": {
+            "type": "string",
+            "example": "Bienvenido a Enalta",
+            "description": "Título del banner"
+          },
+          "language": {
+            "type": "string",
+            "example": "es",
+            "description": "Idioma del banner"
+          },
+          "page": {
+            "type": "string",
+            "example": "inicio",
+            "description": "Página donde se usa el banner"
+          },
+          "type": {
+            "type": "string",
+            "example": "Servicios",
+            "description": "Tipo de banner"
+          },
+          "page_usage": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "inicio"
+            },
+            "description": "Páginas donde se usará el banner"
+          }
+        }
+      },
+      "Card": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Identificador único de la tarjeta."
+          },
+          "title": {
+            "type": "string",
+            "example": "Nuestros Servicios",
+            "description": "Título de la tarjeta"
+          },
+          "language": {
+            "type": "string",
+            "example": "es",
+            "description": "Idioma de la tarjeta"
+          },
+          "page": {
+            "type": "string",
+            "example": "inicio",
+            "description": "Página donde se usa la tarjeta"
+          },
+          "type": {
+            "type": "string",
+            "example": "tienda",
+            "description": "Tipo de tarjeta"
+          },
+          "page_usage": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "inicio"
+            },
+            "description": "Páginas donde se usará la tarjeta"
+          }
+        }
+      },
+      "Navigation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Identificador único de la navegación."
+          },
+          "type": {
+            "type": "string",
+            "example": "main_header",
+            "description": "Tipo de navegación"
+          },
+          "language": {
+            "type": "string",
+            "example": "es",
+            "description": "Idioma de la navegación"
+          },
+          "page": {
+            "type": "string",
+            "example": "inicio",
+            "description": "Página donde se usa la navegación"
+          },
+          "page_usage": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "inicio"
+            },
+            "description": "Páginas donde se usará la navegación"
+          }
+        }
+      },
+      "SEO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Identificador único del SEO."
+          },
+          "title": {
+            "type": "string",
+            "example": "Bienvenido a Enalta",
+            "description": "Título SEO de la página"
+          },
+          "meta_description": {
+            "type": "string",
+            "example": "Enalta ofrece los mejores servicios funerarios...",
+            "description": "Meta descripción SEO de la página"
+          },
+          "focus_keyword": {
+            "type": "string",
+            "example": "servicios funerarios",
+            "description": "Palabra clave objetivo SEO"
+          },
+          "language": {
+            "type": "string",
+            "example": "es",
+            "description": "Idioma del SEO"
+          },
+          "page": {
+            "type": "string",
+            "example": "inicio",
+            "description": "Página donde se usa el SEO"
+          }
+        }
+      },
+      "Galeria": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Identificador único de la galería."
+          },
+          "language": {
+            "type": "string",
+            "example": "es",
+            "description": "Idioma de la galería"
+          },
+          "page": {
+            "type": "string",
+            "example": "inicio",
+            "description": "Página donde se usa la galería"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "url",
+              "example": "https://example.com/image.jpg"
+            },
+            "description": "Imágenes de la galería"
+          },
+          "wysiwygs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "html",
+              "example": "<p>Descripción de la imagen</p>"
+            },
+            "description": "Descripciones en WYSIWYG de la galería"
+          }
+        }
+      },
+      "Buscador": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1,
+            "description": "Identificador único del buscador."
+          },
+          "title": {
+            "type": "string",
+            "example": "Buscar Servicios",
+            "description": "Título del buscador"
+          },
+          "type": {
+            "type": "string",
+            "example": "Zona",
+            "description": "Tipo de buscador"
+          },
+          "language": {
+            "type": "string",
+            "example": "es",
+            "description": "Idioma del buscador"
+          },
+          "page": {
+            "type": "string",
+            "example": "inicio",
+            "description": "Página donde se usa el buscador"
+          },
+          "page_usage": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "inicio"
+            },
+            "description": "Páginas donde se usará el buscador"
+          }
+        }
+      },
+      "CustomObjects": {
+        "type": "object",
+        "properties": {
+          "banners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Banner"
+            }
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Card"
+            }
+          },
+          "navigations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Navigation"
+            }
+          },
+          "seos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SEO"
+            }
+          },
+          "galerias": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Galeria"
+            }
+          },
+          "buscadores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Buscador"
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
