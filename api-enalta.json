@@ -1,0 +1,400 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "api-enalta (BFF)",
+    "description": "Este servicio actúa como BFF (Backend For Frontend) exponiendo endpoints hacia el frontend. Orquesta las peticiones hacia el servicio Domain y consolida las respuestas para el frontend.\n"
+  },
+  "servers": [
+    {
+      "url": null,
+      "description": "Servidor BFF"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Personas",
+      "description": "Endpoints relacionados con la gestión de personas"
+    },
+    {
+      "name": "Productos",
+      "description": "Endpoints relacionados con la gestión de productos asociados a una persona"
+    },
+    {
+      "name": "Pedidos",
+      "description": "Endpoints relacionados con la gestión del pedido, incluyendo creación y actualización"
+    },
+    {
+      "name": "Pagos",
+      "description": "Endpoints relacionados con la gestión del pago del pedido"
+    }
+  ],
+  "paths": {
+    "/personas": {
+      "get": {
+        "tags": [
+          "Personas"
+        ],
+        "summary": "Obtener listado de personas",
+        "description": "Obtiene un listado de personas a partir de criterios de búsqueda.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "nombre",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "apellido1",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "apellido2",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "provincia",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "localidad",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de personas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Persona"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No se encontraron personas"
+          }
+        }
+      }
+    },
+    "/personas/{idPersona}": {
+      "get": {
+        "tags": [
+          "Personas"
+        ],
+        "summary": "Obtener información de una persona",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPersona",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persona encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Persona no encontrada"
+          }
+        }
+      }
+    },
+    "/personas/{idPersona}/productos": {
+      "get": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Obtener productos asociados a una persona fallecida",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPersona",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de productos para el fallecido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedido": {
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Crear un nuevo pedido en Feedbalia",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Solicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido creado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedido/{idPedido}": {
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Obtener detalle de un pedido en Feedbalia",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del pedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Actualizar un pedido existente, añadiendo más productos",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Solicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido actualizado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedido/{idPedido}/pago": {
+      "post": {
+        "tags": [
+          "Pagos"
+        ],
+        "summary": "Obtener URL de pago en Stripe para un pedido",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StripePaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL de pago generada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "paymentUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedido/{idPedido}/confirmacion": {
+      "post": {
+        "tags": [
+          "Pagos"
+        ],
+        "summary": "Confirmar el resultado del pago de un pedido, se consulta en stripe",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "OK",
+                      "KO"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Confirmación procesada"
+          }
+        }
+      }
+    },
+    "/correo": {
+      "post": {
+        "tags": [
+          "Correo"
+        ],
+        "summary": "Envío de correo al cliente con información sobre el estado del pedido.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Correo enviado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Persona": {
+        "$ref": "shared-schemas.json#/components/schemas/Persona"
+      },
+      "Catalogo": {
+        "$ref": "shared-schemas.json#/components/schemas/Catalogo"
+      },
+      "Solicitud": {
+        "$ref": "shared-schemas.json#/components/schemas/Solicitud"
+      },
+      "Pedido": {
+        "$ref": "shared-schemas.json#/components/schemas/Pedido"
+      },
+      "Email": {
+        "$ref": "shared-schemas.json#/components/schemas/Email"
+      },
+      "StripePaymentRequest": {
+        "$ref": "shared-schemas.json#/components/schemas/StripePaymentRequest"
+      }
+    }
+  }
+}

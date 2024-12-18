@@ -1,0 +1,389 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "ms-enalta (Domain)",
+    "description": "Este servicio implementa la lógica de negocio y validaciones internas. Orquesta las llamadas a los Adapters (Bacanti, Feedbalia, SFMC) y al Stripe-adapter. Estos endpoints son internos y se consumen desde el BFF.\n"
+  },
+  "servers": [
+    {
+      "url": null,
+      "description": "Servidor interno Domain"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Domain-Personas"
+    },
+    {
+      "name": "Domain-Productos"
+    },
+    {
+      "name": "Domain-Pedidos"
+    },
+    {
+      "name": "Domain-Pagos"
+    }
+  ],
+  "paths": {
+    "/domain/personas": {
+      "get": {
+        "tags": [
+          "Domain-Personas"
+        ],
+        "summary": "Obtener listado de personas (interno)",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "nombre",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "apellido1",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "apellido2",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "provincia",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "localidad",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de personas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Persona"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domain/personas/{idPersona}": {
+      "get": {
+        "tags": [
+          "Domain-Personas"
+        ],
+        "summary": "Obtener información de una persona (interno)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPersona",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persona encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Persona no encontrada"
+          }
+        }
+      }
+    },
+    "/domain/personas/{idPersona}/productos": {
+      "get": {
+        "tags": [
+          "Domain-Productos"
+        ],
+        "summary": "Obtener productos de una persona (interno)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPersona",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de productos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domain/pedido": {
+      "post": {
+        "tags": [
+          "Domain-Pedidos"
+        ],
+        "summary": "Crear pedido (interno)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Solicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domain/pedido/{idPedido}": {
+      "get": {
+        "tags": [
+          "Domain-Pedidos"
+        ],
+        "summary": "Obtener detalle del pedido (interno)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del pedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Domain-Pedidos"
+        ],
+        "summary": "Actualizar pedido (interno)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Solicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domain/pedido/{idPedido}/pago": {
+      "post": {
+        "tags": [
+          "Domain-Pagos"
+        ],
+        "summary": "Solicitar URL de pago (interno)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StripePaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL de pago obtenida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "paymentUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/domain/pedido/{idPedido}/confirmacion": {
+      "post": {
+        "tags": [
+          "Domain-Pagos"
+        ],
+        "summary": "Confirmar pago (interno)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "OK",
+                      "KO"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Confirmación procesada"
+          }
+        }
+      }
+    },
+    "/domain/correo": {
+      "post": {
+        "tags": [
+          "Correo"
+        ],
+        "summary": "Envío de correo al cliente con información sobre el estado del pedido.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Correo enviado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Persona": {
+        "$ref": "shared-schemas.json#/components/schemas/Persona"
+      },
+      "Catalogo": {
+        "$ref": "shared-schemas.json#/components/schemas/Catalogo"
+      },
+      "Solicitud": {
+        "$ref": "shared-schemas.json#/components/schemas/Solicitud"
+      },
+      "Pedido": {
+        "$ref": "shared-schemas.json#/components/schemas/Pedido"
+      },
+      "StripePaymentRequest": {
+        "$ref": "shared-schemas.json#/components/schemas/StripePaymentRequest"
+      }
+    }
+  }
+}

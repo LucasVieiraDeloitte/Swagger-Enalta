@@ -1,0 +1,578 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "ms-enalta-adapter",
+    "description": "Este servicio se encarga de las integraciones con sistemas externos: - Bacanti (Gestión de personas y productos) - Feedbalia (Gestión de pedidos) - SFMC (Envío de emails) Estos endpoints son internos y se consumen desde el Domain.\n"
+  },
+  "servers": [
+    {
+      "url": null
+    }
+  ],
+  "tags": [
+    {
+      "name": "Bacanti",
+      "description": "Integración con Bacanti"
+    },
+    {
+      "name": "Feedbalia",
+      "description": "Integración con Feedbalia"
+    },
+    {
+      "name": "SFMC",
+      "description": "Integración con SFMC (Marketing Cloud)"
+    }
+  ],
+  "paths": {
+    "/bacanti/token": {
+      "servers": [
+        {
+          "url": "https://apigesfun.enalta.es:20245"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Bacanti"
+        ],
+        "summary": "Obtención del token de autenticación para acceder a los servicios de Bacanti",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "grant_type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password",
+                  "grant_type"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token obtenido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bacanti/api/personas": {
+      "servers": [
+        {
+          "url": "https://apigesfun.enalta.es:20245"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Bacanti"
+        ],
+        "summary": "Obtener lista de personas desde Bacanti",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "nombre",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "apellido1",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "apellido2",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "provincia",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "localidad",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de personas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Persona"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Persona no encontrada"
+          }
+        }
+      }
+    },
+    "/bacanti/api/personas/{idPersona}": {
+      "servers": [
+        {
+          "url": "https://apigesfun.enalta.es:20245"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Bacanti"
+        ],
+        "summary": "Obtener persona por idPersona desde Bacanti",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPersona",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persona encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Persona"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Persona no encontrada"
+          }
+        }
+      }
+    },
+    "/bacanti/api/{idPersona}/productos": {
+      "servers": [
+        {
+          "url": "https://apigesfun.enalta.es:20245"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Bacanti"
+        ],
+        "summary": "Obtener productos asociados a una persona desde Bacanti",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPersona",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de productos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/feedbalia/auth/token": {
+      "servers": [
+        {
+          "url": "https://ws-exxita-uat.aitanasolutions.com"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Feedbalia"
+        ],
+        "summary": "Obtener token de Feedbalia",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "grant_type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password",
+                  "grant_type"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token obtenido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feedbalia/enalta/solicitud": {
+      "servers": [
+        {
+          "url": "https://ws-exxita-uat.aitanasolutions.com"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Feedbalia"
+        ],
+        "summary": "Crear una solicitud de compra en Feedbalia",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Solicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/feedbalia/enalta/solicitud/{idPedido}": {
+      "servers": [
+        {
+          "url": "https://ws-exxita-uat.aitanasolutions.com"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Feedbalia"
+        ],
+        "summary": "Obtener una solicitud de compra desde Feedbalia",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del pedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Feedbalia"
+        ],
+        "summary": "Actualizar una solicitud de compra en Feedbalia",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Solicitud"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/feedbalia/enalta/solicitud/{idPedido}/confirmacion": {
+      "servers": [
+        {
+          "url": "https://ws-exxita-uat.aitanasolutions.com"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Feedbalia"
+        ],
+        "summary": "Confirmar pago de una compra en Feedbalia",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPedido",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "OK",
+                      "KO"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Confirmación procesada"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/sfmc/journey/{externalKey}": {
+      "servers": [
+        {
+          "url": "https://api.digital.dev.mapfredigitalhealth.com"
+        }
+      ],
+      "post": {
+        "tags": [
+          "SFMC"
+        ],
+        "summary": "Envío de correo electrónico a través de SFMC gestionado por MAPFRE",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "externalKey",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Identificador único del journey para el envío de email. Siempre será obligatorio",
+            "example": "APIEvent-4217e958-cf26-838b-8a26-39fb8f74626f"
+          },
+          {
+            "in": "header",
+            "name": "apiKey",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "secretKey",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Email"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email enviado correctamente"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Token": {
+        "$ref": "shared-schemas.json#/components/schemas/Token"
+      },
+      "Persona": {
+        "$ref": "shared-schemas.json#/components/schemas/Persona"
+      },
+      "Catalogo": {
+        "$ref": "shared-schemas.json#/components/schemas/Catalogo"
+      },
+      "Solicitud": {
+        "$ref": "shared-schemas.json#/components/schemas/Solicitud"
+      },
+      "Pedido": {
+        "$ref": "shared-schemas.json#/components/schemas/Pedido"
+      },
+      "Email": {
+        "$ref": "shared-schemas.json#/components/schemas/Email"
+      }
+    }
+  }
+}
