@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Documentación Unificada de Enalta",
+    "title": "Middleware",
     "version": "1.0.0",
     "description": "Integración de todos los microservicios de Enalta, incluyendo la integración con Stripe."
   },
@@ -1296,10 +1296,24 @@
       }
     },
     "schemas": {
+      "Token": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "number"
+          }
+        }
+      },
       "Persona": {
         "type": "object",
         "properties": {
-          "idPersona": {
+          "id": {
             "type": "string"
           },
           "nombre": {
@@ -1311,88 +1325,376 @@
           "apellido2": {
             "type": "string"
           },
-          "provincia": {
+          "fechaNacimiento": {
+            "type": "string",
+            "format": "date-time",
+            "example": "YYYY-MM-DDTHH:mm:ssZ"
+          },
+          "fechaFallecimiento": {
+            "type": "string",
+            "format": "date-time",
+            "example": "YYYY-MM-DDTHH:mm:ssZ"
+          },
+          "velatorio": {
+            "$ref": "#/components/schemas/Centro"
+          },
+          "ceremonia": {
+            "$ref": "#/components/schemas/Centro"
+          },
+          "destFinal": {
+            "$ref": "#/components/schemas/Centro"
+          }
+        }
+      },
+      "Centro": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string"
           },
-          "localidad": {
+          "nombre": {
             "type": "string"
+          },
+          "direccion": {
+            "$ref": "#/components/schemas/Direccion"
+          },
+          "idSala": {
+            "type": "string"
+          },
+          "fechaInicio": {
+            "type": "string",
+            "format": "date-time",
+            "example": "YYYY-MM-DDTHH:mm:ssZ"
+          },
+          "fechaFin": {
+            "type": "string",
+            "format": "date-time",
+            "example": "YYYY-MM-DDTHH:mm:ssZ"
+          },
+          "ecommerceInd": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Direccion": {
+        "type": "object",
+        "properties": {
+          "nombreTipoCalle": {
+            "type": "string"
+          },
+          "nombreCalle": {
+            "type": "string"
+          },
+          "numeroCalle": {
+            "type": "string"
+          },
+          "codigoPostal": {
+            "type": "string"
+          },
+          "nombreCiudad": {
+            "type": "string"
+          },
+          "nombreMunicipio": {
+            "type": "string"
+          },
+          "latitud": {
+            "type": "number"
+          },
+          "longitud": {
+            "type": "number"
           }
         }
       },
       "Catalogo": {
         "type": "object",
         "properties": {
+          "fechaSolicitud": {
+            "type": "string",
+            "format": "date-time",
+            "example": "YYYY-MM-DDTHH:mm:ssZ"
+          },
           "productos": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "productId": {
-                  "type": "string"
-                },
-                "productName": {
-                  "type": "string"
-                },
-                "price": {
-                  "type": "integer",
-                  "description": "Precio en céntimos"
-                },
-                "quantity": {
-                  "type": "integer"
-                }
-              }
+              "$ref": "#/components/schemas/Producto"
             }
+          }
+        }
+      },
+      "Producto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "referencia": {
+            "type": "string"
+          },
+          "idProveedor": {
+            "type": "string"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "imagen": {
+            "type": "string",
+            "format": "byte"
+          },
+          "categoria": {
+            "type": "string",
+            "enum": [
+              "ramo",
+              "centro",
+              "coronas"
+            ]
+          },
+          "etiqueta": {
+            "type": "string",
+            "enum": [
+              "natural",
+              "esencial",
+              "singular",
+              "especial",
+              "premium"
+            ]
+          },
+          "precio": {
+            "$ref": "#/components/schemas/Precio"
+          }
+        }
+      },
+      "Precio": {
+        "type": "object",
+        "properties": {
+          "precioFinal": {
+            "type": "number"
+          },
+          "baseImponible": {
+            "type": "number"
+          },
+          "tipoImpuesto": {
+            "type": "string",
+            "enum": [
+              "IVA",
+              "IGIC",
+              "IPSI"
+            ]
+          },
+          "porcentajeImpuesto": {
+            "type": "number"
+          },
+          "cuota": {
+            "type": "number"
           }
         }
       },
       "Solicitud": {
         "type": "object",
         "properties": {
-          "idPedido": {
-            "type": "string"
+          "solicitante": {
+            "type": "object",
+            "properties": {
+              "tipo": {
+                "type": "string",
+                "enum": [
+                  "particular",
+                  "empresa"
+                ]
+              },
+              "denominacion": {
+                "type": "string",
+                "nullable": true
+              },
+              "nombre": {
+                "type": "string"
+              },
+              "apellidos": {
+                "type": "string"
+              },
+              "tipoDocumento": {
+                "enum": [
+                  "DNI",
+                  "NIF",
+                  "NIE"
+                ]
+              },
+              "documento": {
+                "type": "string"
+              },
+              "telefono": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "direccion": {
+                "type": "string"
+              },
+              "postal": {
+                "type": "string"
+              },
+              "ticketFactura": {
+                "type": "boolean"
+              },
+              "aceptacionTerminosContratacion": {
+                "type": "boolean"
+              },
+              "aceptacionPoliticasPrivacidad": {
+                "type": "boolean"
+              },
+              "aceptacionRecibirInformacion": {
+                "type": "boolean"
+              }
+            }
           },
-          "total": {
-            "type": "number"
+          "difunto": {
+            "$ref": "#/components/schemas/Persona"
           },
-          "lineItems": {
+          "encargos": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PaymentLineItem"
+              "$ref": "#/components/schemas/Encargo"
             }
+          }
+        }
+      },
+      "Encargo": {
+        "type": "object",
+        "properties": {
+          "producto": {
+            "$ref": "#/components/schemas/Producto"
+          },
+          "tipoDeMensaje": {
+            "type": "string",
+            "enum": [
+              "tarjeta",
+              "cinta"
+            ]
+          },
+          "mensaje": {
+            "type": "string"
+          },
+          "firma": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
       "Pedido": {
         "type": "object",
         "properties": {
-          "idPedido": {
-            "type": "string"
+          "solicitud": {
+            "$ref": "#/components/schemas/Solicitud"
           },
           "estado": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "Pendiente",
+              "Pagado"
+            ]
           },
-          "total": {
-            "type": "number"
-          },
-          "lineItems": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PaymentLineItem"
-            }
+          "importeTotal": {
+            "$ref": "#/components/schemas/Precio"
           }
         }
       },
       "Email": {
         "type": "object",
         "properties": {
-          "to": {
-            "type": "string"
+          "email": {
+            "description": "Correo electrónico destinatario. Contacto (callcenterenalta@centroespecialtutelar.es), Trabaja (recursoshumanos@enalta.es) y Presupuesto (callcenterenalta@centroespecialtutelar.es)",
+            "type": "string",
+            "enum": [
+              "correo@correo.es",
+              "correo@correo.es",
+              "correo@correo.es"
+            ]
           },
-          "subject": {
-            "type": "string"
+          "name": {
+            "type": "string",
+            "description": "Nombre del cliente. Se informa en todos los tipos de email."
           },
-          "body": {
-            "type": "string"
+          "surname": {
+            "type": "string",
+            "description": "Apellido del cliente. Se informa en todos los tipos de email."
+          },
+          "document_type": {
+            "type": "string",
+            "description": "Tipo de documento del cliente. No se utiliza."
+          },
+          "document_number": {
+            "type": "string",
+            "description": "Número de documento del cliente. No se utiliza."
+          },
+          "id_client": {
+            "type": "boolean",
+            "description": "Indicador de si el cliente es cliente. No se utiliza."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Número de teléfono del cliente. No se utiliza."
+          },
+          "origin": {
+            "type": "string",
+            "description": "Origen de la petición, siempre toma el mismo valor *Enalta*",
+            "example": "Enalta"
+          },
+          "business": {
+            "type": "string",
+            "description": "Origen de la petición, siempre toma el mismo valor *Digital*",
+            "example": "Digital"
+          },
+          "channel": {
+            "type": "string",
+            "description": "No se utiliza."
+          },
+          "ric_id": {
+            "type": "string",
+            "description": "No se utiliza."
+          },
+          "url": {
+            "type": "string",
+            "description": "No se utiliza."
+          },
+          "auxiliary_1": {
+            "type": "string",
+            "description": "Tipo de email a enviar por el cual el journery hace la diferencia",
+            "enum": [
+              "Trabaja",
+              "Solicita",
+              "Contacta"
+            ]
+          },
+          "auxiliary_2": {
+            "type": "string",
+            "description": "Email del cliente."
+          },
+          "auxiliary_3": {
+            "type": "string",
+            "description": "Dependiendo del tipo de email, es una información u otra la que hay que enviar. Contacto (Telefono cliente), Trabaja (Presentacion) y Presupuesto (Codigo postal)"
+          },
+          "auxiliary_4": {
+            "type": "string",
+            "description": "Dependiendo del tipo de email, es una información u otra la que hay que enviar. Contacto (Mensaje del cliente), Trabaja (CV???) y Presupuesto (Servicio)"
+          },
+          "auxiliary_5": {
+            "type": "string",
+            "description": "Dependiendo del tipo de email, es una información u otra la que hay que enviar. Contacto (Aceptación de políticas), Trabaja (Vacante) y Presupuesto (Paquete)"
+          },
+          "auxiliary_6": {
+            "type": "string",
+            "description": "Dependiendo del tipo de email, es una información u otra la que hay que enviar. Contacto (N/A), Trabaja (N/A) y Presupuesto (Información)"
+          },
+          "auxiliary_7": {
+            "type": "string",
+            "description": "Dependiendo del tipo de email, es una información u otra la que hay que enviar. Contacto (N/A), Trabaja (N/A) y Presupuesto (Aceptación políticas)"
+          },
+          "auxiliary_8": {
+            "type": "string",
+            "description": "Dependiendo del tipo de email, es una información u otra la que hay que enviar. Contacto (N/A), Trabaja (N/A) y Presupuesto (Teléfono del cliente)"
           }
         }
       },
@@ -1415,50 +1717,43 @@
           },
           "price": {
             "type": "integer",
-            "description": "Precio unitario del producto en céntimos (ej. 100 equivale a 1.00 €)."
+            "description": "Precio unitario del producto en céntimos."
           },
           "quantity": {
             "type": "integer",
-            "description": "Cantidad solicitada de este producto."
+            "description": "Cantidad solicitada."
           }
         }
       },
       "StripePaymentRequest": {
         "type": "object",
         "required": [
-          "idPedido",
           "total",
           "lineItems"
         ],
         "properties": {
-          "idPedido": {
-            "type": "string",
-            "description": "Identificador único del pedido."
-          },
           "total": {
             "type": "number",
             "description": "Importe total del pedido a cobrar."
           },
           "lineItems": {
             "type": "array",
-            "description": "Listado de productos a incluir en el link de pago.",
             "items": {
               "$ref": "#/components/schemas/PaymentLineItem"
             }
           }
         }
       },
-      "Token": {
+      "Error": {
         "type": "object",
         "properties": {
-          "access_token": {
-            "type": "string"
+          "code": {
+            "type": "string",
+            "example": "ER001"
           },
-          "token_type": {
-            "type": "string"
-          },
-          "expires_in": {
-            "type": "integer"
+          "description": {
+            "type": "string",
+            "description": "Descripción del error"
           }
         }
       }
