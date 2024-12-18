@@ -5,32 +5,6 @@
     "version": "1.0.0",
     "description": "Integración de todos los microservicios de Enalta, incluyendo la integración con Stripe."
   },
-  "servers": [
-    {
-      "url": "https://api.tu-dominio.com",
-      "description": "Servidor de Producción"
-    },
-    {
-      "url": "https://api.staging.tu-dominio.com",
-      "description": "Servidor de Pruebas"
-    },
-    {
-      "url": "https://ms-enalta-internal",
-      "description": "Servidor Interno Domain"
-    },
-    {
-      "url": "https://apigesfun.enalta.es:20245",
-      "description": "Servidor Bacanti"
-    },
-    {
-      "url": "https://ws-exxita-uat.aitanasolutions.com",
-      "description": "Servidor Feedbalia"
-    },
-    {
-      "url": "https://api.digital.dev.mapfredigitalhealth.com",
-      "description": "Servidor SFMC"
-    }
-  ],
   "tags": [
     {
       "name": "Personas",
